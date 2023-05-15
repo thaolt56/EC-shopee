@@ -6,7 +6,7 @@ import { useMutation } from '@tanstack/react-query'
 import { logout } from 'src/apis/auth.api'
 
 export default function Header() {
-  const { setIsAuthenticated, isAuthenticated } = useContext(AppContext)
+  const { setIsAuthenticated, isAuthenticated, profile } = useContext(AppContext)
   const logoutMutation = useMutation({
     mutationFn: logout,
     onSuccess: () => {
@@ -95,7 +95,7 @@ export default function Header() {
                   />
                 </svg>
               </div>
-              <div className='text-sm ml-1'>langtrongthao</div>
+              <div className='text-sm ml-1'>{profile?.email}</div>
             </PopOver>
           )}
 

@@ -16,7 +16,7 @@ interface FormData {
   password: string
 }
 export default function Login() {
-  const { setIsAuthenticated } = useContext(AppContext)
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const navigate = useNavigate()
 
   const {
@@ -32,8 +32,9 @@ export default function Login() {
   const onSubmit = handleSubmit((data) => {
     const body = data
     loginAcountMutation.mutate(body, {
-      onSuccess: () => {
+      onSuccess: (data) => {
         setIsAuthenticated(true)
+        setProfile(data.data.data.user)
         navigate('/')
       },
       //xu ly loi 422 api
