@@ -6,9 +6,9 @@ interface AppContextInterface {
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
 
   profile: User | null
-  setProfile: any
+  setProfile: React.Dispatch<React.SetStateAction<User | null>>
 }
-
+//gia tri khoi tao
 const initialAppContext: AppContextInterface = {
   isAuthenticated: Boolean(getAccessTokenFromLS()),
   setIsAuthenticated: () => null,

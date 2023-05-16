@@ -6,11 +6,12 @@ import { useMutation } from '@tanstack/react-query'
 import { logout } from 'src/apis/auth.api'
 
 export default function Header() {
-  const { setIsAuthenticated, isAuthenticated, profile } = useContext(AppContext)
+  const { setIsAuthenticated, isAuthenticated, profile, setProfile } = useContext(AppContext)
   const logoutMutation = useMutation({
     mutationFn: logout,
     onSuccess: () => {
       setIsAuthenticated(false)
+      setProfile(null)
     }
   })
 
