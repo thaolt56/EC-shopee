@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { rules } from 'src/utils/rules'
 import { useMutation } from '@tanstack/react-query'
-import { loginAcount } from 'src/apis/auth.api'
+import authApi from 'src/apis/auth.api'
 //error 422 api
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ErrorResponse } from 'src/types/utils.type'
@@ -27,7 +27,7 @@ export default function Login() {
   } = useForm<FormData>()
 
   const loginAcountMutation = useMutation({
-    mutationFn: (body: FormData) => loginAcount(body)
+    mutationFn: (body: FormData) => authApi.loginAcount(body)
   })
 
   const onSubmit = handleSubmit((data) => {

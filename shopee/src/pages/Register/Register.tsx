@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { rules } from 'src/utils/rules'
 import { omit } from 'lodash'
 import { useMutation } from '@tanstack/react-query'
-import { registerAcount } from 'src/apis/auth.api'
+import authApi from 'src/apis/auth.api'
 //error 422 api
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ErrorResponse } from 'src/types/utils.type'
@@ -28,7 +28,7 @@ export default function Register() {
   } = useForm<FormData>()
 
   const registerAcountMutation = useMutation({
-    mutationFn: (body: Omit<FormData, 'confirm_password'>) => registerAcount(body)
+    mutationFn: (body: Omit<FormData, 'confirm_password'>) => authApi.registerAcount(body)
   })
   const onSubmit = handleSubmit((data) => {
     const body = omit(data, ['confirm_password'])

@@ -46,3 +46,18 @@ export const rules = {
     }
   }
 }
+
+export const priceRules = {
+  price_min: {
+    pattern: {
+      value: /^\d+$/,
+      message: 'Price-min không đúng định dạng'
+    }
+  },
+  price_max: {
+    pattern: {
+      value: /^\d+$/,
+      message: 'Price-max không đúng định dạng'
+    }
+  }
+}
