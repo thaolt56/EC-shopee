@@ -2,13 +2,17 @@ import ProductRating from 'src/components/ProductRating'
 import { Product as ProductType } from 'src/types/product.type'
 import { formatCurrency } from 'src/utils/utils'
 import { formatNumberToSocialStyle } from 'src/utils/utils'
+import { Link } from 'react-router-dom'
 
 interface Props {
   product: ProductType
 }
 export default function Product({ product }: Props) {
   return (
-    <div className='bg-white shadow-sm hover:translate-y-[-0.05rem] hover:shadow-md duration-100 overflow-hidden cursor-pointer'>
+    <Link
+      to={`${product._id}`}
+      className='bg-white shadow-sm hover:translate-y-[-0.05rem] hover:shadow-md duration-100 overflow-hidden cursor-pointer'
+    >
       <div className='w-full pt-[100%] relative'>
         <img
           className='absolute top-0 left-0 bg-white w-full h-full object-cover'
@@ -39,6 +43,6 @@ export default function Product({ product }: Props) {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
