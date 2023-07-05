@@ -5,23 +5,33 @@ import ProductRating2 from 'src/components/ProductRating2'
 import { formatCurrency } from 'src/utils/utils'
 import DOMPurify from 'dompurify'
 import { useEffect, useState, useMemo } from 'react'
+import { ProductListConfig } from 'src/types/product.type'
+import Product from 'src/components/Products/Product'
+import { getIdFromNameId } from 'src/utils/utils'
 
 export default function ProductDetail() {
-  const { id } = useParams()
+  const { nameId } = useParams()
+  const id = getIdFromNameId(nameId as string)
   const { data } = useQuery({
     queryKey: ['productId', id],
     queryFn: () => {
       return productApi.getProductDetail(String(id))
     }
   })
-  //console.log('product', data)
-  if (!data) return
-  const product = data.data.data
-  const price = product.price
-  const price_before = product.price_before_discount
 
+  const product = data?.data.data
+
+  //get category by product
+  const queryConfig: ProductListConfig = { limit: '20', page: '1', category: product?.category._id }
+  const { data: productData } = useQuery({
+    queryKey: ['products', queryConfig],
+    queryFn: () => {
+      return productApi.getProducts(queryConfig)
+    }
+    //staleTime: 5 * 60 * 1000
+  })
+  console.log('category', productData)
   //slider images
-
   const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
   const [activeImage, setActiveImage] = useState('')
 
@@ -35,8 +45,9 @@ export default function ProductDetail() {
       setActiveImage(product.images[0])
     }
   }, [product])
+
   const next = () => {
-    if (currentIndexImages[1] < product.images.length) {
+    if (product && currentIndexImages[1] < product.images.length) {
       setCurrentIndexImages((prev) => [prev[0] + 1, prev[1] + 1])
     }
   }
@@ -50,7 +61,7 @@ export default function ProductDetail() {
   const chooseActive = (img: string) => {
     setActiveImage(img)
   }
-
+  if (!product) return null
   return (
     <div className='w-max-7xl bg-gray-200 py-4'>
       <div className=' grid grid-cols-12 m-8  shadow bg-white p-8'>
@@ -116,7 +127,7 @@ export default function ProductDetail() {
 
           <div className='flex mt-2 items-center '>
             <div className=' text-red-500 mr-2 underline'>{product.rating}</div>
-            <ProductRating2 rating={data.data.data.rating} />
+            <ProductRating2 rating={product.rating} />
 
             <div className='flex pl-4  ml-4 py-1 border-l border-l-gray-400'>
               <span>{product.sold}</span>
@@ -125,10 +136,12 @@ export default function ProductDetail() {
           </div>
 
           <div className='flex mt-8 items-center'>
-            <div className='text-2xl text-gray-300 mr-4 line-through'>₫{formatCurrency(price_before)}</div>
-            <div className='text-3xl text-orange'>₫{formatCurrency(price)}</div>
+            <div className='text-2xl text-gray-300 mr-4 line-through'>
+              ₫{formatCurrency(product.price_before_discount)}
+            </div>
+            <div className='text-3xl text-orange'>₫{formatCurrency(product.price)}</div>
             <div className='text-sm ml-8 p-1 bg-orange text-white uppercase'>
-              {Math.round(((price_before - price) / price_before) * 100)}%Giảm
+              {Math.round(((product.price_before_discount - product.price) / product.price_before_discount) * 100)}%Giảm
             </div>
           </div>
 
@@ -199,7 +212,24 @@ export default function ProductDetail() {
       <div className='shadow bg-white m-8 p-8 mt-4'>
         <div className='text-2xl uppercase'>Mô tả sản phẩm</div>
         <div className='text-sm my-8 '>
-          <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(data.data.data.description) }} />
+          <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description) }} />
+        </div>
+      </div>
+
+      <div className='shadow bg-white m-8 p-8 mt-4'>
+        <div className='text-2xl uppercase'>Sản phẩm có thể bạn quan tâm</div>
+        <div className='text-sm my-8 '>
+          {productData && (
+            <div className='col-span-9 flex flex-col'>
+              <div className='grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 lg:grid-cols-6 gap-4 mt-8'>
+                {productData.data.data.products.map((product) => (
+                  <div key={product._id}>
+                    <Product product={product} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

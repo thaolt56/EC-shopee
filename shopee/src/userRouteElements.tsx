@@ -56,7 +56,7 @@ export default function userRouteElements() {
       ]
     },
     {
-      path: ':id',
+      path: ':nameId',
       index: true,
       element: (
         <MainLayout>

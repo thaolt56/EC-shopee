@@ -1,11 +1,18 @@
 import { useContext } from 'react'
 import PopOver from '../PopOver'
-import { Link } from 'react-router-dom'
 import { AppContext } from 'src/contexts/app.context'
 import { useMutation } from '@tanstack/react-query'
 import authApi from 'src/apis/auth.api'
+import configQuery from 'src/hooks/configQuery'
+import { useForm } from 'react-hook-form'
+import { createSearchParams, Link, useNavigate } from 'react-router-dom'
+import { omit } from 'lodash'
 
+interface FormData {
+  search: string
+}
 export default function Header() {
+  const navigate = useNavigate()
   //global value by useContext
   const { setIsAuthenticated, isAuthenticated, profile, setProfile } = useContext(AppContext)
   const logoutMutation = useMutation({
@@ -14,6 +21,26 @@ export default function Header() {
       setIsAuthenticated(false)
       setProfile(null)
     }
+  })
+
+  //xu ly search
+  const { register, handleSubmit } = useForm<FormData>()
+  const queryConfig = configQuery()
+  //submit form
+  const onSubmit = handleSubmit((data) => {
+    //console.log('data', data.search.trim().toString())
+    navigate({
+      pathname: '',
+      search: createSearchParams(
+        omit(
+          {
+            ...queryConfig,
+            name: data.search.trim().toString()
+          },
+          ['order', 'sort_by']
+        )
+      ).toString()
+    })
   })
 
   const handleLogout = () => {
@@ -122,15 +149,21 @@ export default function Header() {
             </svg>
           </Link>
 
-          <form className='col-span-8 '>
+          <form className='col-span-8 ' onSubmit={onSubmit}>
             <div className='flex bg-white rounded-sm p-1'>
               <input
+                {...register('search', {
+                  required: true
+                })}
                 className='text-black px-3 py-2 flex-grow border-none outline-none bg-transparent '
                 name='search'
                 type='text'
                 placeholder='Bạn cần tìm gì?.'
               ></input>
-              <div className='py-2 px-5 text-white bg-orange rounded-sm hover:opacity-70 cursor-pointer'>
+              <button
+                type='submit'
+                className='py-2 px-5 text-white bg-orange rounded-sm hover:opacity-70 cursor-pointer'
+              >
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
@@ -145,9 +178,10 @@ export default function Header() {
                     d='M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z'
                   />
                 </svg>
-              </div>
+              </button>
             </div>
           </form>
+
           <div className='col-span-1 text-white justify-self-end'>
             <PopOver
               renderPopover={
